@@ -9,14 +9,14 @@ jobs:
   quality:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.13"
           cache: pip
       - name: Install dependencies
         run: python -m pip install -e ".[dev]"
       - name: Lint
-        run: ruff check .
+        run: python -m ruff check .
       - name: Test
-        run: pytest --cov=taskflow --cov-report=term-missing
+        run: python -m pytest --cov=taskflow --cov-report=term-missing

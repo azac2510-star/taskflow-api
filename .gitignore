@@ -18,6 +18,7 @@ desktop/
 # Keep only the current generated guide in version control.
 docs/TaskFlow_API_Project_Guide_ZH.docx
 docs/TaskFlow_API_Project_Guide_ZH_v2.docx
+docs/TaskFlow_API_Project_Guide_ZH_v3.docx
 
 # Local checkpoint notes are for continuing work on this computer.
 PROGRESS.md

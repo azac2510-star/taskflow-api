@@ -271,6 +271,8 @@ src/taskflow/
 
 第一次阅读只需要知道数据从哪里来、去了哪里，不需要记住所有语法。
 
+需要按完整请求链路逐步阅读时，打开 `docs/CODE_WALKTHROUGH.md`。它会分别解释注册登录、JWT 鉴权、用户隔离、分页查询、级联删除、统计查询和 CI。
+
 ### 第 3 天练习
 
 1. 打开 `models/task.py`，找出四种任务状态。
@@ -318,7 +320,7 @@ if project is None or project.owner_id != current_user.id:
 
 1. 把 token 过期时间改成 5 分钟，重新登录并观察。
 2. 使用错误密码登录，确认返回 401。
-3. 注册两个用户，用 Bob 的 token 访问 Alice 的项目，确认返回 404。
+3. 双击 `verify_isolation.bat`，确认脚本输出 `USER ISOLATION PASSED`。
 4. 用自己的话解释为什么密码哈希必须有随机 salt。
 
 ## 第 5 天：运行测试并故意制造一次失败
@@ -460,7 +462,7 @@ git push -u origin main
 
 ## 完成之后怎么继续提升
 
-按 `docs/RESUME_GUIDE.md` 的顺序做增强，一次只加一个功能：
+先按 `docs/CODE_WALKTHROUGH.md` 完成代码走读和口述练习，再按 `docs/RESUME_GUIDE.md` 的顺序做增强。一次只加一个功能：
 
 1. 任务标签与多标签筛选。
 2. 项目成员和角色权限。

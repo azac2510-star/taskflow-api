@@ -10,7 +10,7 @@ from docx.oxml.ns import qn
 from docx.shared import Inches, Pt, RGBColor, Twips
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-OUTPUT_PATH = PROJECT_ROOT / "docs" / "TaskFlow_API_Project_Guide_ZH_v3.docx"
+OUTPUT_PATH = PROJECT_ROOT / "docs" / "TaskFlow_API_Project_Guide_ZH_v4.docx"
 
 BODY_FONT = "Microsoft YaHei"
 CODE_FONT = "Consolas"
@@ -225,7 +225,7 @@ def configure_document(document: Document) -> None:
         remove_style_borders(style)
 
     document.core_properties.title = "TaskFlow API Python 后端项目教程"
-    document.core_properties.subject = "项目说明、七天操作教程、简历与面试指南"
+    document.core_properties.subject = "项目说明、七天操作教程、代码走读、简历与面试指南"
     document.core_properties.author = "TaskFlow API 项目文档"
     document.core_properties.comments = "Generated from the local TaskFlow API project."
 
@@ -452,7 +452,7 @@ def add_cover(document: Document) -> None:
     subtitle = document.add_paragraph()
     subtitle.alignment = WD_ALIGN_PARAGRAPH.CENTER
     subtitle.paragraph_format.space_after = Pt(34)
-    run = subtitle.add_run("项目说明、七天操作教程、简历与面试指南")
+    run = subtitle.add_run("项目说明、七天操作教程、代码走读、简历与面试指南")
     set_run_font(run, BODY_FONT)
     run.font.size = Pt(13)
     run.font.color.rgb = RGBColor.from_string(MUTED_COLOR)
@@ -493,7 +493,7 @@ def build_document() -> Path:
     front_matter = """
 ## 文档说明
 
-这份文档把 TaskFlow API 的项目说明、操作教程、接口速查和简历准备内容整理为一本连续的学习手册。你可以先按“七天学习路线”建立整体认识，再从第一天开始逐项执行命令。每个阶段都有明确检查点，不需要一次看懂所有源代码。
+这份文档把 TaskFlow API 的项目说明、操作教程、接口速查、代码走读和简历准备内容整理为一本连续的学习手册。你可以先按“七天学习路线”建立整体认识，再从第一天开始逐项执行命令。每个阶段都有明确检查点，不需要一次看懂所有源代码。
 
 这份文档面向首次完成完整 Python 后端项目的学习者。最终目标不是把代码复制到电脑里，而是能够独立启动、验证、解释并继续扩展项目。完成文档中的全部步骤后，你可以把项目写进简历，并在面试中回答鉴权、权限隔离、数据库设计、自动化测试和部署相关问题。
 
@@ -642,6 +642,11 @@ GET /api/v1/projects/1/tasks?status=in_progress&priority=high&page=1&page_size=2
 ```
 """
     render_blocks(document, parse_markdown(api_reference))
+
+    document.add_page_break()
+    document.add_heading("代码走读与面试讲解", level=1)
+    code_walkthrough = read_after_title(PROJECT_ROOT / "docs" / "CODE_WALKTHROUGH.md")
+    render_blocks(document, parse_markdown(code_walkthrough))
 
     document.add_page_break()
     document.add_heading("简历写法与面试准备", level=1)

@@ -6,7 +6,7 @@ from docx import Document
 from docx.oxml.ns import qn
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-DOCX_PATH = PROJECT_ROOT / "docs" / "TaskFlow_API_Project_Guide_ZH_v3.docx"
+DOCX_PATH = PROJECT_ROOT / "docs" / "TaskFlow_API_Project_Guide_ZH_v4.docx"
 
 
 def validate() -> None:
@@ -22,9 +22,9 @@ def validate() -> None:
     document = Document(DOCX_PATH)
     style_counts = Counter(paragraph.style.name for paragraph in document.paragraphs)
     assert style_counts["Title"] == 1
-    assert style_counts["Heading 1"] == 4
-    assert style_counts["Heading 2"] >= 20
-    assert style_counts["Heading 3"] >= 20
+    assert style_counts["Heading 1"] == 5
+    assert style_counts["Heading 2"] >= 25
+    assert style_counts["Heading 3"] >= 25
     assert len(document.tables) >= 8
 
     empty_cells = 0
@@ -55,6 +55,7 @@ def validate() -> None:
     assert "TaskFlow API Python 后端项目教程" in paragraph_text
     assert "12 项测试通过" in document_text
     assert "http://127.0.0.1:8000/demo" in document_text
+    assert "USER ISOLATION PASSED" in document_text
 
     print(f"DOCX: {DOCX_PATH}")
     print(f"Paragraphs: {len(document.paragraphs)}")

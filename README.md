@@ -11,6 +11,7 @@ TaskFlow 是一个可直接写进简历的多用户项目与任务管理后端�
 - 统计接口提供完成率、进行中数量和逾期任务数
 - 内置 `/demo` 浏览器操作台，新手无需配置 Swagger 授权即可走通业务
 - 12 个 pytest 测试覆盖鉴权、隔离、筛选和级联删除
+- 提供一键用户隔离验证脚本，用真实 HTTP 检查跨用户越权场景
 - Docker Compose 一键启动 API + PostgreSQL
 - GitHub Actions 自动执行 Ruff 和 pytest
 
@@ -111,6 +112,14 @@ Copy-Item .env.example .env
 .\.venv\Scripts\python.exe scripts\smoke_test.py
 ```
 
+再执行用户隔离验证：
+
+```powershell
+.\.venv\Scripts\python.exe scripts\verify_isolation.py
+```
+
+也可以直接双击 `verify_isolation.bat`。脚本会创建两个临时用户，验证跨用户读取、修改项目和创建任务全部返回 404。
+
 ## Docker 启动
 
 ```bash
@@ -132,7 +141,7 @@ docker compose up --build
 | GET/POST | `/api/v1/projects/{id}/tasks` | 任务列表/创建任务 |
 | GET/PATCH/DELETE | `/api/v1/tasks/{id}` | 任务详情/修改/删除 |
 
-完整学习步骤见 [TUTORIAL.md](TUTORIAL.md)，简历写法见 [docs/RESUME_GUIDE.md](docs/RESUME_GUIDE.md)。
+完整学习步骤见 [TUTORIAL.md](TUTORIAL.md)，代码与面试讲解见 [docs/CODE_WALKTHROUGH.md](docs/CODE_WALKTHROUGH.md)，简历写法见 [docs/RESUME_GUIDE.md](docs/RESUME_GUIDE.md)。可打印的完整 Word 手册见 [docs/TaskFlow_API_Project_Guide_ZH_v4.docx](docs/TaskFlow_API_Project_Guide_ZH_v4.docx)。
 
 ## 简历描述模板
 

@@ -1,0 +1,518 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TaskFlow 操作台</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f4f6f8;
+        --surface: #ffffff;
+        --surface-soft: #eef3f5;
+        --text: #172026;
+        --muted: #65727b;
+        --border: #d6dde1;
+        --accent: #0f766e;
+        --accent-dark: #115e59;
+        --warning: #a15c00;
+        --danger: #b42318;
+        --success: #16794b;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Microsoft YaHei", "Segoe UI", sans-serif;
+      }
+
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+
+      .shell {
+        width: min(1120px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 28px 0 48px;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 20px;
+        padding-bottom: 18px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      h1,
+      h2,
+      p {
+        margin-top: 0;
+      }
+
+      h1 {
+        margin-bottom: 5px;
+        font-size: 28px;
+        letter-spacing: 0;
+      }
+
+      h2 {
+        margin-bottom: 14px;
+        font-size: 17px;
+        letter-spacing: 0;
+      }
+
+      .muted {
+        color: var(--muted);
+      }
+
+      .status {
+        min-width: 138px;
+        padding: 8px 12px;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        background: var(--surface);
+        text-align: center;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .status.authorized {
+        border-color: #9ac7b0;
+        color: var(--success);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+        margin-top: 20px;
+      }
+
+      .panel {
+        min-width: 0;
+        padding: 20px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--surface);
+      }
+
+      .panel.wide {
+        grid-column: 1 / -1;
+      }
+
+      .field {
+        display: grid;
+        gap: 6px;
+        margin-bottom: 12px;
+      }
+
+      label {
+        color: #34424b;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        min-height: 40px;
+        padding: 9px 10px;
+        border: 1px solid #b9c4ca;
+        border-radius: 6px;
+        background: #fff;
+        color: var(--text);
+      }
+
+      textarea {
+        min-height: 84px;
+        resize: vertical;
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        border-color: var(--accent);
+        outline: 2px solid rgba(15, 118, 110, 0.14);
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+        align-items: center;
+      }
+
+      button {
+        min-height: 38px;
+        padding: 8px 13px;
+        border: 1px solid transparent;
+        border-radius: 6px;
+        background: var(--accent);
+        color: #fff;
+        cursor: pointer;
+        font-weight: 700;
+      }
+
+      button:hover {
+        background: var(--accent-dark);
+      }
+
+      button.secondary {
+        border-color: #b9c4ca;
+        background: #fff;
+        color: #26343c;
+      }
+
+      button.secondary:hover {
+        background: var(--surface-soft);
+      }
+
+      button:disabled {
+        cursor: not-allowed;
+        opacity: 0.55;
+      }
+
+      .output {
+        min-height: 150px;
+        max-height: 330px;
+        margin: 0;
+        padding: 14px;
+        overflow: auto;
+        border: 1px solid #cfd7db;
+        border-radius: 6px;
+        background: #172026;
+        color: #d9e4e8;
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 12px;
+        line-height: 1.55;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      .project-select {
+        margin-top: 12px;
+      }
+
+      .hint {
+        margin: 8px 0 0;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      @media (max-width: 760px) {
+        .shell {
+          width: min(100% - 20px, 1120px);
+          padding-top: 18px;
+        }
+
+        .topbar {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .grid {
+          grid-template-columns: 1fr;
+        }
+
+        .panel.wide {
+          grid-column: auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <div>
+          <h1>TaskFlow 操作台</h1>
+          <p class="muted" id="baseUrl"></p>
+        </div>
+        <div class="status" id="authStatus">未登录</div>
+      </header>
+
+      <section class="grid">
+        <article class="panel">
+          <h2>账号登录</h2>
+          <div class="field">
+            <label for="email">邮箱</label>
+            <input id="email" value="demo@example.com" autocomplete="username" />
+          </div>
+          <div class="field">
+            <label for="password">密码</label>
+            <input id="password" type="password" value="12345678" autocomplete="current-password" />
+          </div>
+          <div class="actions">
+            <button id="loginButton" type="button">登录</button>
+            <button id="meButton" class="secondary" type="button">读取当前用户</button>
+            <button id="logoutButton" class="secondary" type="button">退出</button>
+          </div>
+        </article>
+
+        <article class="panel">
+          <h2>创建项目</h2>
+          <div class="field">
+            <label for="projectName">项目名称</label>
+            <input id="projectName" value="我的第一个项目" />
+          </div>
+          <div class="field">
+            <label for="projectDescription">项目说明</label>
+            <textarea id="projectDescription">通过 TaskFlow 操作台创建</textarea>
+          </div>
+          <button id="createProjectButton" type="button">创建项目</button>
+        </article>
+
+        <article class="panel wide">
+          <h2>项目列表</h2>
+          <div class="actions">
+            <button id="loadProjectsButton" type="button">刷新项目</button>
+            <button id="statsButton" class="secondary" type="button">查看统计</button>
+          </div>
+          <select id="projectSelect" class="project-select" aria-label="选择项目"></select>
+          <p class="hint">选择项目后可以查看统计并创建任务。</p>
+        </article>
+
+        <article class="panel">
+          <h2>任务操作</h2>
+          <div class="field">
+            <label for="taskTitle">任务标题</label>
+            <input id="taskTitle" value="完成第一次 API 测试" />
+          </div>
+          <div class="field">
+            <label for="taskPriority">优先级</label>
+            <select id="taskPriority">
+              <option value="low">低</option>
+              <option value="medium" selected>中</option>
+              <option value="high">高</option>
+              <option value="urgent">紧急</option>
+            </select>
+          </div>
+          <div class="actions">
+            <button id="createTaskButton" type="button">创建任务</button>
+            <button id="loadTasksButton" class="secondary" type="button">刷新任务</button>
+            <button id="completeTaskButton" class="secondary" type="button">标记完成</button>
+          </div>
+          <div class="field project-select">
+            <label for="taskSelect">选择任务</label>
+            <select id="taskSelect" aria-label="选择任务"></select>
+          </div>
+        </article>
+
+        <article class="panel">
+          <h2>接口结果</h2>
+          <pre class="output" id="output">等待操作...</pre>
+        </article>
+      </section>
+    </main>
+
+    <script>
+      const baseUrl = window.location.origin;
+      const state = {
+        token: localStorage.getItem("taskflow_token") || "",
+        projects: [],
+      };
+
+      const output = document.querySelector("#output");
+      const authStatus = document.querySelector("#authStatus");
+      const projectSelect = document.querySelector("#projectSelect");
+      const taskSelect = document.querySelector("#taskSelect");
+
+      document.querySelector("#baseUrl").textContent = baseUrl;
+
+      function setOutput(value) {
+        output.textContent =
+          typeof value === "string" ? value : JSON.stringify(value, null, 2);
+      }
+
+      function setToken(token) {
+        state.token = token;
+        if (token) {
+          localStorage.setItem("taskflow_token", token);
+          authStatus.textContent = "已登录";
+          authStatus.classList.add("authorized");
+        } else {
+          localStorage.removeItem("taskflow_token");
+          authStatus.textContent = "未登录";
+          authStatus.classList.remove("authorized");
+        }
+      }
+
+      async function api(path, options = {}) {
+        const headers = { Accept: "application/json" };
+        let body;
+
+        if (options.body) {
+          if (options.form) {
+            headers["Content-Type"] = "application/x-www-form-urlencoded";
+            body = new URLSearchParams(options.body);
+          } else {
+            headers["Content-Type"] = "application/json";
+            body = JSON.stringify(options.body);
+          }
+        }
+
+        if (state.token) {
+          headers.Authorization = `Bearer ${state.token}`;
+        }
+
+        const response = await fetch(`${baseUrl}${path}`, {
+          method: options.method || "GET",
+          headers,
+          body,
+        });
+        const text = await response.text();
+        const data = text ? JSON.parse(text) : null;
+
+        setOutput({
+          request: `${options.method || "GET"} ${path}`,
+          status: response.status,
+          response: data,
+        });
+
+        if (!response.ok) {
+          throw new Error(data?.detail || `HTTP ${response.status}`);
+        }
+        return data;
+      }
+
+      async function login() {
+        const data = await api("/api/v1/auth/login", {
+          method: "POST",
+          form: true,
+          body: {
+            username: document.querySelector("#email").value.trim(),
+            password: document.querySelector("#password").value,
+          },
+        });
+        setToken(data.access_token);
+      }
+
+      async function loadCurrentUser() {
+        await api("/api/v1/auth/me");
+      }
+
+      async function loadProjects() {
+        const data = await api("/api/v1/projects?page=1&page_size=100");
+        state.projects = data.items;
+        projectSelect.replaceChildren();
+
+        for (const project of state.projects) {
+          const option = document.createElement("option");
+          option.value = project.id;
+          option.textContent = `#${project.id} ${project.name}`;
+          projectSelect.append(option);
+        }
+      }
+
+      async function createProject() {
+        const project = await api("/api/v1/projects", {
+          method: "POST",
+          body: {
+            name: document.querySelector("#projectName").value.trim(),
+            description: document
+              .querySelector("#projectDescription")
+              .value.trim(),
+          },
+        });
+        await loadProjects();
+        projectSelect.value = String(project.id);
+      }
+
+      async function createTask() {
+        const projectId = projectSelect.value;
+        if (!projectId) {
+          throw new Error("请先创建或选择一个项目");
+        }
+        await api(`/api/v1/projects/${projectId}/tasks`, {
+          method: "POST",
+          body: {
+            title: document.querySelector("#taskTitle").value.trim(),
+            priority: document.querySelector("#taskPriority").value,
+          },
+        });
+        await loadTasks();
+      }
+
+      async function loadTasks() {
+        const projectId = projectSelect.value;
+        if (!projectId) {
+          throw new Error("请先创建或选择一个项目");
+        }
+        const data = await api(
+          `/api/v1/projects/${projectId}/tasks?page=1&page_size=100`,
+        );
+        taskSelect.replaceChildren();
+
+        for (const task of data.items) {
+          const option = document.createElement("option");
+          option.value = task.id;
+          option.textContent = `#${task.id} ${task.title} [${task.status}]`;
+          taskSelect.append(option);
+        }
+      }
+
+      async function completeTask() {
+        const taskId = taskSelect.value;
+        if (!taskId) {
+          throw new Error("请先创建或选择一个任务");
+        }
+        await api(`/api/v1/tasks/${taskId}`, {
+          method: "PATCH",
+          body: { status: "done" },
+        });
+        await loadTasks();
+      }
+
+      async function showStats() {
+        const projectId = projectSelect.value;
+        if (!projectId) {
+          throw new Error("请先创建或选择一个项目");
+        }
+        await api(`/api/v1/projects/${projectId}/stats`);
+      }
+
+      function bind(buttonId, action) {
+        document.querySelector(buttonId).addEventListener("click", async () => {
+          try {
+            await action();
+          } catch (error) {
+            setOutput({ error: error.message, token: state.token ? "present" : "missing" });
+          }
+        });
+      }
+
+      bind("#loginButton", login);
+      bind("#meButton", loadCurrentUser);
+      bind("#createProjectButton", createProject);
+      bind("#loadProjectsButton", loadProjects);
+      bind("#createTaskButton", createTask);
+      bind("#loadTasksButton", loadTasks);
+      bind("#completeTaskButton", completeTask);
+      bind("#statsButton", showStats);
+      projectSelect.addEventListener("change", () => {
+        taskSelect.replaceChildren();
+      });
+      document.querySelector("#logoutButton").addEventListener("click", () => {
+        setToken("");
+        state.projects = [];
+        projectSelect.replaceChildren();
+        setOutput("已退出登录");
+      });
+
+      setToken(state.token);
+      if (state.token) {
+        loadCurrentUser().catch(() => setToken(""));
+      }
+    </script>
+  </body>
+</html>

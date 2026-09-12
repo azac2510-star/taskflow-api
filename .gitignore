@@ -1,0 +1,23 @@
+.venv/
+__pycache__/
+*.py[cod]
+*.db
+.env
+.pytest_cache/
+.ruff_cache/
+.coverage
+.taskflow_runtime.json
+htmlcov/
+dist/
+build/
+*.egg-info/
+
+# Local desktop launchers contain machine-specific paths.
+desktop/
+
+# Keep only the current generated guide in version control.
+docs/TaskFlow_API_Project_Guide_ZH.docx
+docs/TaskFlow_API_Project_Guide_ZH_v2.docx
+
+# Local checkpoint notes are for continuing work on this computer.
+PROGRESS.md
